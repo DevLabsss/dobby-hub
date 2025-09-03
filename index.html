@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="Your friendly robo-mascot. Smooth 3D-like motion, glowing highlights, and a clean dark UI."
+    />
+    <link rel="canonical" href="https://devlabsss.github.io/dobby-hub/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SentientAGI" />
+    <meta property="og:title" content="SentientAGI — Dobby" />
+    <meta
+      property="og:description"
+      content="Your friendly robo-mascot. Smooth 3D-like motion, glowing highlights, and a clean dark UI."
+    />
+    <meta property="og:url" content="https://devlabsss.github.io/dobby-hub/" />
+    <meta
+      property="og:image"
+      content="https://devlabsss.github.io/dobby-hub/og-dobby.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SentientAGI — Dobby" />
+    <meta
+      name="twitter:description"
+      content="Your friendly robo-mascot. Smooth 3D-like motion, glowing highlights, and a clean dark UI."
+    />
+    <meta
+      name="twitter:image"
+      content="https://devlabsss.github.io/dobby-hub/og-dobby.png"
+    />
+
+    <!-- Basics -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SentientAGI — Dobby</title>
+
+    <!-- Favicons -->
+    <!-- Favicons (complete + cache-busting) -->
+    <link rel="icon" href="./favicon.ico?v=2" sizes="any" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./favicon-32.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="./favicon-16.png?v=2"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./apple-touch-icon.png?v=2"
+    />
+    <meta name="theme-color" content="#090c12" />
+    <link rel="icon" href="./dobby.png?v=2" />
+
+    <!-- Fonts & Tailwind -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        --bg: #090c12;
+        --stroke: rgba(255, 255, 255, 0.08);
+        --ring: rgba(102, 153, 255, 0.5);
+        --muted: #9aa4b2;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: radial-gradient(
+            1200px 700px at 10% -10%,
+            #141d34 0%,
+            #090c12 60%
+          ),
+          var(--bg);
+        color: #eaf0ff;
+        font-family: Inter, system-ui;
+      }
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.02)
+        );
+        border: 1px solid var(--stroke);
+        backdrop-filter: blur(8px);
+      }
+      .btn {
+        background: linear-gradient(180deg, #151b2a, #0e1424);
+        border: 1px solid var(--stroke);
+      }
+      .btn:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        transform: translateY(-1px);
+      }
+      .ring:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 1px solid var(--stroke);
+      }
+      .avatar img {
+        width: 140%;
+        height: 140%;
+        object-fit: cover;
+        object-position: 50% 35%;
+      }
+      .frame {
+        border-radius: 24px;
+        border: 1px solid var(--stroke);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+      }
+      .stage {
+        perspective: 1000px;
+      }
+      .rig {
+        transform-style: preserve-3d;
+        transition: transform 0.2s ease;
+      }
+      .dobby {
+        width: min(420px, 80vw);
+        aspect-ratio: 1/1.12;
+        position: relative;
+      }
+      .dobby img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+      }
+      .halo {
+        position: absolute;
+        inset: auto 0 -40px 0;
+        height: 38px;
+        border-radius: 999px;
+        background: radial-gradient(
+          closest-side,
+          rgba(120, 170, 255, 0.35),
+          transparent 70%
+        );
+        filter: blur(6px);
+        transform: translateZ(-80px);
+      }
+      .glow {
+        position: absolute;
+        inset: -8% -8% auto -8%;
+        height: 60%;
+        background: radial-gradient(
+          circle at 50% 40%,
+          rgba(120, 170, 255, 0.18),
+          transparent 60%
+        );
+        filter: blur(20px);
+        transform: translateZ(-60px);
+      }
+      .proj {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .proj:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      }
+      .pill {
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .tag {
+        font-size: 11px;
+        padding: 0.2rem 0.5rem;
+        border: 1px solid var(--stroke);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .bar {
+        height: 10px;
+        border-radius: 999px;
+        background: #131a2a;
+        overflow: hidden;
+        border: 1px solid var(--stroke);
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #6aa3ff, #9b8cff);
+      }
+      .chip {
+        font-size: 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 999px;
+        padding: 0.25rem 0.6rem;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .lb-card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.02)
+        );
+        border: 1px solid var(--stroke);
+        border-radius: 16px;
+        padding: 14px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .rig {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- NAV -->
+    <header
+      class="max-w-6xl mx-auto px-5 pt-6 pb-2 flex items-center justify-between"
+    >
+      <a
+        href="https://DevLabsss.github.io/dobby-hub"
+        class="flex items-center gap-3"
+      >
+        <div class="avatar"><img src="dobby.png" alt="Dobby avatar" /></div>
+        <span class="font-extrabold tracking-tight">SentientAGI</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="#features" class="hover:underline">Features</a>
+        <a href="#commands" class="hover:underline">Commands</a>
+        <a href="#demo" class="hover:underline">Live Demo</a>
+        <a href="#setup" class="hover:underline">Setup</a>
+        <a href="https://DevLabsss.github.io/dobby-hub" class="hover:underline"
+          >← Back to Hub</a
+        >
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="max-w-6xl mx-auto px-5 py-8 md:py-12 card rounded-3xl">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+            Meet <span class="text-indigo-300">Dobby</span>
+          </h1>
+          <p class="muted mt-3 max-w-prose">
+            Your friendly robo-mascot. Smooth 3D-like motion, glowing
+            highlights, and a clean dark UI.
+          </p>
+          <div class="mt-6 flex gap-3 flex-wrap">
+            <a href="#showcase" class="btn ring px-4 py-2 rounded-lg text-sm"
+              >Browse Projects</a
+            >
+            <a
+              href="dobby-gallery/index.html"
+              class="btn ring px-4 py-2 rounded-lg text-sm"
+            >
+              Open Dobby Gallery
+            </a>
+          </div>
+        </div>
+        <div class="frame p-6">
+          <div class="stage grid place-items-center">
+            <div id="rig" class="rig">
+              <div class="dobby" id="dobby">
+                <div class="glow"></div>
+                <img src="dobby.png" alt="Dobby 3D" />
+                <div class="halo"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT SHOWCASE -->
+    <section id="showcase" class="max-w-6xl mx-auto px-5 py-10">
+      <div class="flex items-end justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-xl font-semibold">Project Showcase</h2>
+          <p class="muted text-sm">
+            Recent builds — cards link to live demo & GitHub.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <input
+            id="search"
+            class="px-3 py-2 rounded-lg pill text-sm"
+            placeholder="Search projects…"
+          />
+          <select id="filter" class="px-3 py-2 rounded-lg pill text-sm">
+            <option value="all">All</option>
+            <option>Web</option>
+            <option>Bot</option>
+            <option>Game</option>
+            <option>Tool</option>
+          </select>
+        </div>
+      </div>
+      <div
+        id="grid"
+        class="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      ></div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="events" class="max-w-6xl mx-auto px-5 pb-10">
+      <div class="card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Events & Challenges</h2>
+          <button id="copyEvents" class="btn ring text-sm px-3 py-2 rounded-lg">
+            Copy list
+          </button>
+        </div>
+        <div id="evList" class="mt-4 grid md:grid-cols-2 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS TRACKER -->
+    <section id="progress" class="max-w-6xl mx-auto px-5 pb-10">
+      <div class="card rounded-3xl p-6">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-xl font-semibold">Progress Tracker</h2>
+          <select id="roleTab" class="px-3 py-2 rounded-lg pill text-sm">
+            <option>Helper</option>
+            <option>Educator</option>
+            <option>Artist</option>
+            <option>Builder</option>
+          </select>
+        </div>
+
+        <div class="mt-4 flex items-center gap-3">
+          <span class="chip" id="streak">Streak: 0 days</span>
+          <span class="chip" id="weekly">Weekly tasks: 0/0</span>
+          <button id="reset" class="btn ring text-xs px-3 py-2 rounded-lg">
+            Reset week
+          </button>
+        </div>
+
+        <div class="mt-4 bar"><span id="barFill" style="width: 0%"></span></div>
+        <div id="tasks" class="mt-4 grid md:grid-cols-2 gap-3"></div>
+        <p class="muted text-xs mt-2">
+          Tasks are saved locally in your browser (localStorage).
+        </p>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="leaderboard" class="max-w-6xl mx-auto px-5 pb-10">
+      <div class="flex items-end justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-xl font-semibold">Leaderboard (Weekly)</h2>
+          <p class="muted text-sm">
+            Dummy data for now — highlight top contributors.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <select id="lbView" class="px-3 py-2 rounded-lg pill text-sm">
+            <option value="Helper">Helper</option>
+            <option value="Builder">Builder</option>
+          </select>
+        </div>
+      </div>
+      <div
+        id="lbGrid"
+        class="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      ></div>
+    </section>
+
+    <!-- ABOUT DOBBY -->
+    <section id="about" class="max-w-6xl mx-auto px-5 pb-12">
+      <div class="card rounded-3xl p-6">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-xl font-semibold">About Dobby</h2>
+          <span class="tag">Mascot</span>
+        </div>
+        <p class="muted mt-2 max-w-3xl">
+          Dobby is a compact robo-companion inspired by friendly working dogs
+          and clean mecha lines. The glowing eyes and pendant hint at
+          “always-on” curiosity. Use Dobby to guide newcomers, celebrate builds,
+          and keep the community welcoming.
+        </p>
+        <ul class="mt-4 text-sm list-disc pl-5 leading-7">
+          <li>
+            <b>Style:</b> soft cell-shading, bright cyan accents, rounded edges
+          </li>
+          <li><b>Personality:</b> upbeat, helpful, curious</li>
+          <li>
+            <b>Uses:</b> section icons, stickers, avatars, loading/empty states
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-5 pb-12 text-center muted text-sm">
+      <p>Dobby by SentientAGI.</p>
+    </section>
+
+    <!-- TOAST -->
+    <div
+      id="toast"
+      class="fixed right-4 bottom-4 hidden px-3 py-2 rounded-lg bg-[#10131e] border border-white/10 text-sm"
+    >
+      Copied
+    </div>
+
+    <script>
+      /* ---------- 3D tilt + idle spin ---------- */
+      (function () {
+        const rig = document.getElementById("rig"),
+          dobby = document.getElementById("dobby");
+        let targetRX = -6,
+          targetRY = 18,
+          targetRZ = 0,
+          curRX = 0,
+          curRY = 0,
+          curRZ = 0,
+          idle = 0,
+          lastMove = Date.now();
+        const lerp = (a, b, t) => a + (b - a) * t;
+        function loop() {
+          const since = Date.now() - lastMove;
+          if (since > 1500) {
+            idle += 0.008;
+            targetRY = Math.sin(idle) * 18;
+            targetRX = Math.cos(idle * 0.8) * 8;
+            targetRZ = Math.sin(idle * 0.6) * 2;
+          }
+          curRX = lerp(curRX, targetRX, 0.08);
+          curRY = lerp(curRY, targetRY, 0.08);
+          curRZ = lerp(curRZ, targetRZ, 0.08);
+          rig.style.transform = `rotateX(${curRX}deg) rotateY(${curRY}deg) rotateZ(${curRZ}deg)`;
+          requestAnimationFrame(loop);
+        }
+        function onMove(e) {
+          const r = dobby.getBoundingClientRect();
+          const cx =
+            ((e.clientX ?? e.touches?.[0]?.clientX) - r.left) / r.width;
+          const cy =
+            ((e.clientY ?? e.touches?.[0]?.clientY) - r.top) / r.height;
+          targetRY = (cx - 0.5) * 52;
+          targetRX = (0.5 - cy) * 28;
+          targetRZ = (cx - 0.5) * 4;
+          lastMove = Date.now();
+        }
+        dobby.addEventListener("mousemove", onMove);
+        dobby.addEventListener("touchmove", onMove, { passive: true });
+        setInterval(() => {
+          dobby.style.transform = `translateY(${
+            Math.sin(Date.now() / 500) * 6
+          }px)`;
+        }, 16);
+        loop();
+      })();
+
+      /* ===================== DATA ===================== */
+      const PROJECTS = [
+        {
+          name: "Gallery Dobby",
+          type: "Web",
+          desc: "Artwork gallery all about Dobby.",
+          demo: "dobby-gallery/index.html",
+          gh: "https://github.com/DevLabsss",
+        },
+        {
+          name: "AI Ascension Quiz",
+          type: "Game",
+          desc: "Browser quiz mini-game.",
+          demo: "quiz/index.html",
+          gh: "https://github.com/DevLabsss",
+        },
+        {
+          name: "Dobby Chatbot",
+          type: "Bot",
+          desc: "Discord helper bot.",
+          demo: "dobby-chatbot/index.html",
+          gh: "https://github.com/DevLabsss",
+        },
+      ];
+
+      const EVENTS = [
+        {
+          title: "Weekly Community Sprint",
+          date: "2025-09-08",
+          link: "#",
+          note: "Share wins + next tasks",
+        },
+        {
+          title: "Educator Mini-Challenge",
+          date: "2025-09-10",
+          link: "#",
+          note: "Post a 5-tweet explainer",
+        },
+        {
+          title: "Helper Focus Day",
+          date: "2025-09-12",
+          link: "#",
+          note: "Guide newcomers; compile FAQs",
+        },
+        {
+          title: "Open Demo Night",
+          date: "2025-09-15",
+          link: "#",
+          note: "Show your mini-MVP",
+        },
+      ];
+
+      const CHECKS = {
+        Helper: [
+          "Post 3 positive, on-topic replies",
+          "Answer at least 1 member question",
+          "Guide newcomers to correct channels",
+          "Submit weekly proof in #claim-contributor-roles",
+        ],
+        Educator: [
+          "Publish 1 short explainer/thread",
+          "Share credible sources & links",
+          "Collect feedback & improve",
+          "Post summary in #educator-junior",
+        ],
+        Artist: [
+          "Sketch → line → color (WIP)",
+          "Share concept in 2–3 lines",
+          "Credit non-AI tools/materials",
+          "Post weekly progress in #artist-junior",
+        ],
+        Builder: [
+          "Ship a small MVP (live link)",
+          "README with setup & demo",
+          "Ask for feedback / issues",
+          "Summarize weekly changes",
+        ],
+      };
+
+      const LEADERBOARD = {
+        Helper: [
+          { name: "Aira", points: 92 },
+          { name: "Raka", points: 88 },
+          { name: "Deva", points: 79 },
+          { name: "Naya", points: 68 },
+          { name: "Ihsan", points: 60 },
+          { name: "Zee", points: 55 },
+        ],
+        Builder: [
+          { name: "Karel", points: 95 },
+          { name: "Meca", points: 90 },
+          { name: "Neo", points: 84 },
+          { name: "Luna", points: 73 },
+          { name: "Arvo", points: 64 },
+          { name: "Jin", points: 58 },
+        ],
+      };
+      /* ================================================= */
+
+      /* ---------- Showcase render ---------- */
+      const grid = document.getElementById("grid"),
+        q = document.getElementById("search"),
+        f = document.getElementById("filter");
+      function card(p) {
+        return `<article class="proj card rounded-2xl p-4">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold">${escapeHTML(p.name)}</h3>
+            <span class="tag">${escapeHTML(p.type)}</span>
+          </div>
+          <p class="muted text-sm mt-1">${escapeHTML(p.desc)}</p>
+          <div class="mt-3 flex gap-2">
+            <a class="btn px-3 py-1.5 rounded-lg text-xs" href="${
+              p.demo
+            }" target="_blank" rel="noreferrer">Live</a>
+            <a class="btn px-3 py-1.5 rounded-lg text-xs" href="${
+              p.gh
+            }" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>`;
+      }
+      function renderShowcase() {
+        const term = q.value.trim().toLowerCase(),
+          type = f.value;
+        const arr = PROJECTS.filter((p) => {
+          const okType = type === "all" || p.type === type;
+          const hay = [p.name, p.desc, p.type].join(" ").toLowerCase();
+          return okType && hay.includes(term);
+        });
+        grid.innerHTML = arr.map(card).join("");
+      }
+      q.addEventListener("input", renderShowcase);
+      f.addEventListener("change", renderShowcase);
+      renderShowcase();
+
+      /* ---------- Events render/copy ---------- */
+      const evList = document.getElementById("evList"),
+        copyBtn = document.getElementById("copyEvents"),
+        toast = document.getElementById("toast");
+      function renderEvents() {
+        evList.innerHTML = EVENTS.map(
+          (e) => `
+          <div class="p-4 rounded-xl bg-black/20 border border-white/10">
+            <div class="flex items-center justify-between gap-3">
+              <div><div class="font-semibold">${escapeHTML(
+                e.title
+              )}</div><div class="muted text-xs mt-0.5">${fmtDate(
+            e.date
+          )}</div></div>
+              <a class="btn px-3 py-1.5 rounded-lg text-xs" href="${
+                e.link
+              }" target="_blank" rel="noreferrer">Open</a>
+            </div>
+            ${e.note ? `<p class="text-sm mt-3">${escapeHTML(e.note)}</p>` : ""}
+          </div>
+        `
+        ).join("");
+      }
+      copyBtn.addEventListener("click", async () => {
+        const txt = EVENTS.map(
+          (e) => `• ${e.title} — ${e.date}${e.note ? ` — ${e.note}` : ""}`
+        ).join("\n");
+        try {
+          await navigator.clipboard.writeText(txt);
+          showToast("Events copied");
+        } catch {
+          alert("Copy failed");
+        }
+      });
+      renderEvents();
+
+      /* ---------- Progress Tracker ---------- */
+      const tasksWrap = document.getElementById("tasks"),
+        roleTab = document.getElementById("roleTab"),
+        barFill = document.getElementById("barFill"),
+        weekly = document.getElementById("weekly"),
+        streakEl = document.getElementById("streak"),
+        resetBtn = document.getElementById("reset");
+      function loadState(role) {
+        const raw = localStorage.getItem("dobby:" + role);
+        return raw ? JSON.parse(raw) : { done: {}, lastDay: null, streak: 0 };
+      }
+      function saveState(role, state) {
+        localStorage.setItem("dobby:" + role, JSON.stringify(state));
+      }
+      function renderTasks() {
+        const role = roleTab.value,
+          list = CHECKS[role] || [],
+          state = loadState(role);
+        tasksWrap.innerHTML = list
+          .map(
+            (t, i) => `
+          <label class="flex gap-3 items-start p-3 rounded-lg bg-black/20 border border-white/10">
+            <input type="checkbox" data-i="${i}" ${
+              state.done[i] ? "checked" : ""
+            } class="mt-1 accent-indigo-400">
+            <span class="text-sm leading-6">${escapeHTML(t)}</span>
+          </label>`
+          )
+          .join("");
+        const doneCount = Object.values(state.done).filter(Boolean).length;
+        const pct = list.length
+          ? Math.round((doneCount / list.length) * 100)
+          : 0;
+        barFill.style.width = pct + "%";
+        weekly.textContent = `Weekly tasks: ${doneCount}/${list.length}`;
+        const today = new Date().toDateString();
+        if (state.lastDay !== today && doneCount > 0) {
+          state.streak = state.lastDay ? state.streak + 1 : 1;
+          state.lastDay = today;
+          saveState(role, state);
+        }
+        streakEl.textContent = `Streak: ${state.streak} days`;
+        tasksWrap.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+          cb.addEventListener("change", () => {
+            const s = loadState(role);
+            s.done[cb.dataset.i] = cb.checked;
+            saveState(role, s);
+            renderTasks();
+          });
+        });
+      }
+      roleTab.addEventListener("change", renderTasks);
+      resetBtn.addEventListener("click", () => {
+        const role = roleTab.value;
+        saveState(role, { done: {}, lastDay: null, streak: 0 });
+        renderTasks();
+      });
+      renderTasks();
+
+      /* ---------- Leaderboard ---------- */
+      const lbGrid = document.getElementById("lbGrid");
+      const lbView = document.getElementById("lbView");
+      function renderLB() {
+        const role = lbView.value;
+        const data = (LEADERBOARD[role] || []).slice(0, 6);
+        lbGrid.innerHTML = data
+          .map(
+            (u, idx) => `
+          <div class="lb-card">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-full overflow-hidden border border-white/10">
+                  <img src="dobby.png" alt="avatar" style="width:130%;height:130%;object-fit:cover;object-position:50% 35%">
+                </div>
+                <div>
+                  <div class="font-semibold">${escapeHTML(u.name)}</div>
+                  <div class="muted text-xs">${role}</div>
+                </div>
+              </div>
+              <div class="text-sm font-semibold">${u.points}</div>
+            </div>
+            <div class="bar mt-3"><span style="width:${Math.min(
+              100,
+              u.points
+            )}%"></span></div>
+            <div class="mt-2 text-xs muted">Rank #${idx + 1}</div>
+          </div>`
+          )
+          .join("");
+      }
+      lbView.addEventListener("change", renderLB);
+      renderLB();
+
+      /* ---------- helpers ---------- */
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.remove("hidden");
+        setTimeout(() => t.classList.add("hidden"), 1400);
+      }
+      function escapeHTML(s) {
+        return String(s || "").replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[m])
+        );
+      }
+      function fmtDate(s) {
+        const d = new Date(s);
+        return isNaN(d)
+          ? s
+          : d.toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+      }
+    </script>
+  </body>
+</html>
